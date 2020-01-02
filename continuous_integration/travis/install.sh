@@ -43,20 +43,29 @@ create_new_conda_env() {
 
     # Use the miniconda installer for faster download / install of conda
     # itself
-    wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-         -O miniconda.sh
+    UNAME_ARCH=$(uname -m)
+    SUDO = ""
     MINICONDA_PREFIX=/home/travis/miniconda
-    chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PREFIX
+    if [ "$UNAME_ARCH" == 'aarch64' ]; then
+      wget -q "https://github.com/Archiconda/build-tools/releases/download/0.2.3/Archiconda3-0.2.3-Linux-aarch64.sh" -O archiconda.sh;
+      chmod +x archiconda.sh && ./archiconda.sh -b -p $MINICONDA_PREFIX;
+      SUDO=sudo;
+      $SUDO cp -r $HOME/miniconda/bin/* /usr/bin/;
+    else
+      wget http://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+         -O miniconda.sh;
+      chmod +x miniconda.sh && ./miniconda.sh -b -p $MINICONDA_PREFIX;
+    fi
     export PATH=$MINICONDA_PREFIX/bin:$PATH
-    conda update --yes conda
-    conda config --set restore_free_channel true
-    conda config --set pip_interop_enabled true
+    $SUDO conda update --yes conda
+    $SUDO conda config --set restore_free_channel true
+    $SUDO conda config --set pip_interop_enabled true
 
     # Configure the conda environment and put it in the path using the
     # provided versions
     REQUIREMENTS=$(print_conda_requirements)
     echo "conda requirements string: $REQUIREMENTS"
-    conda create -n testenv --yes $REQUIREMENTS
+    $SUDO conda create -n testenv --yes $REQUIREMENTS
     source activate testenv
 }
 
