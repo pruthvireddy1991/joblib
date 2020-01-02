@@ -60,8 +60,8 @@ create_new_conda_env() {
     $SUDO conda update --yes conda
     if [ "$UNAME_ARCH" != 'aarch64' ]; then
       conda config --set restore_free_channel true
+      conda config --set pip_interop_enabled true
     fi
-    $SUDO conda config --set pip_interop_enabled true
 
     # Configure the conda environment and put it in the path using the
     # provided versions
