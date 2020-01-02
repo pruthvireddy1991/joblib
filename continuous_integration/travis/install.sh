@@ -58,7 +58,9 @@ create_new_conda_env() {
     fi
     export PATH=$MINICONDA_PREFIX/bin:$PATH
     $SUDO conda update --yes conda
-    $SUDO conda config --set restore_free_channel true
+    if [ "$UNAME_ARCH" != 'aarch64' ]; then
+      conda config --set restore_free_channel true
+    fi
     $SUDO conda config --set pip_interop_enabled true
 
     # Configure the conda environment and put it in the path using the
